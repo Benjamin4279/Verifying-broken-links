@@ -1,0 +1,72 @@
+package com.Verify;
+
+import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+
+public class TestVerification {
+	
+	public static void main(String[] args){
+		
+		File src = new File("C:\\Users\\Benjamin\\AppData\\Local\\Temp\\Temp2_IEDriverServer_x64_2.53.1.zip\\IEDriverServer.exe");
+		System.setProperty("webdriver.ie.driver", src.getAbsolutePath());
+		
+		WebDriver driver = new InternetExplorerDriver();
+		driver.get("http://www.cnn.com");
+		driver.manage().window().maximize();
+		
+		List<WebElement> element = driver.findElements(By.tagName("script"));
+		List<WebElement> element2 = driver.findElements(By.tagName("a"));
+		
+		System.out.println("Total elements: " + element.size());
+		System.out.println("Total links: " + element2.size());
+		
+		for(int x = 0; x < element.size(); x++){
+			
+			WebElement wElement = element.get(x);
+			
+			int a = wElement.getLocation().getX();
+			int b = wElement.getLocation().getY();
+		}
+		
+		for(int y = 0; y < element2.size(); y++){
+			
+			WebElement wElement2 = element2.get(y);
+			String Url = wElement2.getAttribute("href");
+			verifyActiveLink(Url);
+		}
+		
+		
+	}
+
+	private static void verifyActiveLink(String url) {
+		
+		URL Url;
+		try {
+			Url = new URL(url);
+			
+			HttpURLConnection HttpURLConnect = (HttpURLConnection)Url.openConnection();
+			
+			HttpURLConnect.setConnectTimeout(5000);
+			HttpURLConnect.connect();
+			
+			if(HttpURLConnect.getResponseCode() == 200){
+				System.out.println(url + HttpURLConnect.getResponseMessage());
+			}
+			
+			if(HttpURLConnect.getResponseCode() == HttpURLConnect.HTTP_NOT_FOUND){
+				System.out.println(url + HttpURLConnect.getResponseCode() + " - " + HttpURLConnection.HTTP_NOT_FOUND);
+			}
+			
+		} catch (Exception e) {
+		}
+		
+	}
+
+}
